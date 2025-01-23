@@ -20,10 +20,11 @@ def index():
             driver = iniciar_driver()
             automatizar_proceso_consejo_judicial(driver, cedula)
             automatizar_proceso_gestion_fiscalias(driver, cedula)
+            automatizar_proceso_supa(driver, cedula)
         except Exception as e:
             error_message = f"Error al consultar: {traceback.format_exc()}"
         finally:
-            # No cerramos el navegador para que ambas ventanas queden abiertas
+            # No cerramos el navegador para que las pestañas permanezcan abiertas
             pass
 
     return render_template("index.html", cedula=cedula, error_message=error_message)
@@ -88,11 +89,6 @@ def automatizar_proceso_consejo_judicial(driver, cedula):
         print("Esperando que se abra una nueva pestaña...")
         WebDriverWait(driver, 30).until(EC.number_of_windows_to_be(2))
 
-        # Cerrar la pestaña del Consejo Judicial
-        print("Cerrando la pestaña del Consejo Judicial...")
-        driver.switch_to.window(original_tab)
-        driver.close()
-
         # Cambiar a la nueva pestaña
         nueva_pestana = [tab for tab in driver.window_handles if tab != driver.current_window_handle][0]
         driver.switch_to.window(nueva_pestana)
@@ -138,6 +134,44 @@ def automatizar_proceso_gestion_fiscalias(driver, cedula):
 
     except Exception as e:
         print(f"Error durante el proceso en Gestión de Fiscalías: {e}")
+        traceback.print_exc()
+
+
+def automatizar_proceso_supa(driver, cedula):
+    """
+    Automatiza el proceso de consulta en la página de SUPA.
+    """
+    try:
+        print("Abriendo una nueva pestaña para la página de SUPA...")
+        driver.execute_script("window.open('');")
+        nueva_pestana = driver.window_handles[-1]
+        driver.switch_to.window(nueva_pestana)
+
+        url = "https://supa.funcionjudicial.gob.ec/pensiones/publico/consulta.jsf"
+        driver.get(url)
+
+        print("Esperando que la página cargue completamente...")
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+        # Llenar campo de cédula
+        print("Llenando el campo de cédula en SUPA...")
+        campo_cedula = WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, "form:t_texto_cedula"))
+        )
+        campo_cedula.clear()
+        campo_cedula.send_keys(cedula)
+
+        # Hacer clic en el botón "Buscar"
+        print("Haciendo clic en el botón 'Buscar' en SUPA...")
+        boton_buscar = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable((By.ID, "form:b_buscar_cedula"))
+        )
+        boton_buscar.click()
+
+        print("Consulta en SUPA completada. Ventana abierta.")
+
+    except Exception as e:
+        print(f"Error durante el proceso en SUPA: {e}")
         traceback.print_exc()
 
 
