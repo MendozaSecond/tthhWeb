@@ -21,6 +21,8 @@ def index():
             automatizar_proceso_consejo_judicial(driver, cedula)
             automatizar_proceso_gestion_fiscalias(driver, cedula)
             automatizar_proceso_supa(driver, cedula)
+            automatizar_proceso_titulacion(driver, cedula)
+            automatizar_proceso_antecedentes_penales(driver, cedula)
         except Exception as e:
             error_message = f"Error al consultar: {traceback.format_exc()}"
         finally:
@@ -172,6 +174,104 @@ def automatizar_proceso_supa(driver, cedula):
 
     except Exception as e:
         print(f"Error durante el proceso en SUPA: {e}")
+        traceback.print_exc()
+
+
+def automatizar_proceso_titulacion(driver, cedula):
+    """
+    Automatiza el proceso en la página de Titulación.
+    """
+    try:
+        print("Abriendo una nueva pestaña para la página de Titulación...")
+        driver.execute_script("window.open('');")
+        nueva_pestana = driver.window_handles[-1]
+        driver.switch_to.window(nueva_pestana)
+
+        print("Automatizando proceso en Titulación...")
+        url = "https://servicios.educacion.gob.ec/titulacion25-web/faces/paginas/consulta-titulos-refrendados.xhtml"
+        driver.get(url)
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+        campo_cedula = driver.find_element(By.ID, "formBusqueda:cedula")
+        campo_cedula.clear()
+        campo_cedula.send_keys(cedula)
+
+        # boton_consultar = driver.find_element(By.ID, "formBusqueda:clBuscar")
+        # boton_consultar.click()
+        # print("Consulta en Titulación completada.")
+    except Exception as e:
+        print(f"Error durante el proceso de consulta de Titulo: {e}")
+        traceback.print_exc()
+
+
+def automatizar_proceso_antecedentes_penales(driver, cedula):
+    """
+    Automatiza el proceso en la página de Antecedentes Penales.
+    """
+    try:
+        print("Abriendo una nueva pestaña para la página de Antecedentes Penales...")
+        driver.execute_script("window.open('');")
+        nueva_pestana = driver.window_handles[-1]
+        driver.switch_to.window(nueva_pestana)
+
+        print("Automatizando proceso en Antecedentes Penales...")
+        url = "https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/"
+        driver.get(url)
+        WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+        # Esperar hasta que el campo de cédula esté disponible
+        print("Esperando a que el campo de cédula esté disponible después de resolver el captcha...")
+        campo_cedula = WebDriverWait(driver, 600).until(
+            EC.element_to_be_clickable((By.ID, "txtCi"))
+        )
+        print("Campo de cédula disponible.")
+
+        # Ahora llenamos el campo con la cédula
+        print("Llenando el campo de cédula...")
+        campo_cedula = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable((By.ID, "txtCi"))
+        )
+        campo_cedula.clear()
+        campo_cedula.send_keys(cedula)
+
+        boton_consultar = driver.find_element(By.ID, "btnSig1")
+        boton_consultar.click()
+        print("Consulta de Antecedentes Penales.")
+
+        # Esperar hasta que el campo Motivo de Consulta este disponible
+        print("Esperando a que el campo de Motivo esté disponible...")
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, "txtMotivo"))
+        )
+        print("Campo de Motivo disponible.")
+
+        # Ahora llenamos el campo Motivo de Consulta
+        print("Llenando el campo de Motivo...")
+        campo_motivo = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable((By.ID, "txtMotivo"))
+        )
+        campo_motivo.clear()
+        campo_motivo.send_keys("Consulta de Antecedentes Penales")
+
+        # Hacer clic en el botón "Siguiente"
+        print("Haciendo clic en el botón 'Siguiente'...")
+        boton_siguiente = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable((By.ID, "btnSig2"))
+        )
+        boton_siguiente.click()
+        print("Consulta de Antecedentes Penales completada.")
+
+        # Hacer clic en el botón "Visualizar Certificado"
+        print("Haciendo clic en el botón 'Visualizar Certificado'...")
+        boton_visualizar = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable((By.ID, "btnOpen"))
+        )
+        boton_visualizar.click()
+        print("Visualización del certificado de Antecedentes Penales.")
+        
+
+    except Exception as e:
+        print(f"Error durante el proceso de consulta de Antecedentes Penales: {e}")
         traceback.print_exc()
 
 
