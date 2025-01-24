@@ -4,17 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Filtro de Selección</title>
+    <!-- CSS de Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Filtros de Selección</h1>
-    <form method="POST" action="/">
-        <label for="cedula">Ingrese la Cédula:</label>
-        <input type="text" id="cedula" name="cedula" value="{{ cedula }}" required>
-        <button type="submit">Consultar</button>
-    </form>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Filtros de Selección</h1>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="POST" action="/" class="row g-3">
+                    <div class="col-md-9">
+                        <label for="cedula" class="form-label">Ingrese la Cédula:</label>
+                        <input type="text" id="cedula" name="cedula" value="{{ cedula }}" class="form-control" placeholder="Ejemplo: 0123456789" required>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Consultar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-    {% if error_message %}
-        <p style="color: red;">{{ error_message }}</p>
-    {% endif %}
+        <!-- Mensaje de error -->
+        {% if error_message %}
+        <div class="alert alert-danger mt-4" role="alert">
+            {{ error_message }}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- JavaScript de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
